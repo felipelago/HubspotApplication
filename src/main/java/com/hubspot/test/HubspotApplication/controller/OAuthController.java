@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+
 @RestController
 @RequestMapping("/oauth")
 public class OAuthController {
@@ -25,8 +27,8 @@ public class OAuthController {
 
     @GetMapping("/authorize-url")
     public ResponseEntity<String> getAuthorizationUrl() {
-        String url = UriComponentsBuilder
-                .fromHttpUrl(authUrl)
+        String url = UriComponentsBuilder.newInstance()
+                .uri(URI.create(authUrl))
                 .queryParam("client_id", clientId)
                 .queryParam("redirect_uri", redirectUri)
                 .queryParam("scope", scope)

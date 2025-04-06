@@ -16,6 +16,7 @@ public class ContactController {
         this.hubspotService = hubspotService;
     }
 
+    //TODO - Deve respeitar as políticas de rate limit definidas pela API;
     @PostMapping
     public ResponseEntity<String> criarContato(
             @RequestBody @Valid ContactRequest request,

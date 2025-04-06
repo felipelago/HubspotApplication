@@ -1,12 +1,11 @@
 package com.hubspot.test.HubspotApplication.service;
 
 import com.hubspot.test.HubspotApplication.dto.ContactRequest;
+import com.hubspot.test.HubspotApplication.exception.ContatoJaCadastradoException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -34,6 +33,13 @@ public class HubspotService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        return restTemplate.postForEntity(hubspotApiUrl, request, String.class);
+        try {
+            return restTemplate.postForEntity(hubspotApiUrl, request, String.class);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                throw new ContatoJaCadastradoException("Contato já está cadastrado no HubSpot.");
+            }
+            throw e;
+        }
     }
 }

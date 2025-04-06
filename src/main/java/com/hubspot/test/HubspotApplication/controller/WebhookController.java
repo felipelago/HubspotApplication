@@ -12,7 +12,6 @@ public class WebhookController {
 
     @PostMapping
     public ResponseEntity<Void> receberWebhook(@RequestBody String payload) {
-        // TODO - corrigir método
         System.out.println("Webhook recebido: " + payload);
         return ResponseEntity.ok().build();
     }

@@ -1,15 +1,18 @@
 package com.hubspot.test.HubspotApplication.exception;
 
 import com.hubspot.test.HubspotApplication.dto.ApiErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalHandlerException {
 
@@ -46,6 +49,15 @@ public class GlobalHandlerException {
     public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
         return ResponseEntity.status(500).body(
                 new ApiErrorResponse(500, "Erro interno: " + ex.getMessage(), null)
+        );
+    }
+
+    @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
+    public ResponseEntity<ApiErrorResponse> handleHttpClientErrorException(HttpClientErrorException.Unauthorized ex) {
+        log.warn("Token expirado ou inválido ao tentar acessar a API do HubSpot");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ApiErrorResponse(401, "Token expirado: " + ex.getStatusText(), null)
         );
     }
 

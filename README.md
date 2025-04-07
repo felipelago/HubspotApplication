@@ -10,6 +10,7 @@
   <li><strong>Spring Security</strong>: utilizado apenas para desabilitar autenticação padrão e permitir acesso livre à API.</li>
   <li><strong>Validation</strong>: para validação de inputs.</li>
   <li><strong>RestTemplate</strong>: para chamadas HTTP externas (HubSpot API).</li>
+  <li><strong>Lombok</strong>: evita código boilerplate (getters/setters, construtores, etc).</li>
 </ul>
 <p><em>Optei por não usar WebClient pois a simplicidade do projeto favorece RestTemplate. A estrutura também foi mantida limpa, sem sobrecarga de dependências.</em></p>
 <hr/>

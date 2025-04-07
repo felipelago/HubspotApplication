@@ -1,5 +1,6 @@
 package com.hubspot.test.HubspotApplication.exception;
 
+import com.hubspot.test.HubspotApplication.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,26 +22,31 @@ public class GlobalHandlerException {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errorResponse = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errorResponse.put(error.getField(), error.getDefaultMessage())
         );
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", "Erro de validação");
-        response.put("fields", errorResponse);
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(
+                new ApiErrorResponse(400, "Erro de validação", errorResponse)
+        );
     }
 
-    @ExceptionHandler (RateLimitExceededException.class)
-    public ResponseEntity<Map<String, String>> handleRateLimitExceded(RateLimitExceededException ex){
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<Map<String, String>> handleRateLimitExceded(RateLimitExceededException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", ex.getMessage());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
+        return ResponseEntity.status(500).body(
+                new ApiErrorResponse(500, "Erro interno: " + ex.getMessage(), null)
+        );
     }
 
 }

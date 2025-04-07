@@ -2,6 +2,7 @@ package com.hubspot.test.HubspotApplication.service;
 
 import com.hubspot.test.HubspotApplication.dto.ContactRequest;
 import com.hubspot.test.HubspotApplication.exception.ContatoJaCadastradoException;
+import com.hubspot.test.HubspotApplication.exception.RateLimitExceededException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,10 @@ public class HubspotService {
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.CONFLICT) {
                 throw new ContatoJaCadastradoException("Contato já está cadastrado no HubSpot.");
+            }
+            //Conta free tem 100 requisições por 10 segundos por token (documentação oficial HubSpot)
+            if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                throw new RateLimitExceededException("Limite de requisições atingido. Tente novamente em instantes.");
             }
             throw e;
         }

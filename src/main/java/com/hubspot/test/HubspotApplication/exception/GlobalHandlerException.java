@@ -16,6 +16,7 @@ public class GlobalHandlerException {
     public ResponseEntity<Map<String, String>> handleContatoJaCadastrado(ContatoJaCadastradoException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", ex.getMessage());
+
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -32,6 +33,14 @@ public class GlobalHandlerException {
         response.put("fields", errorResponse);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler (RateLimitExceededException.class)
+    public ResponseEntity<Map<String, String>> handleRateLimitExceded(RateLimitExceededException ex){
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
     }
 
 }
